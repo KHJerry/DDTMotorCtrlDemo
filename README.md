@@ -1,6 +1,6 @@
 # DDTMotorCtrlDemo
 Some Demo about Direct Drive Tech Motor Control
 
-|***Updata***|***Data***|***Platform***|
+|***Data***|***Platform***|***Updata***|
 |------------|----------|--------------|
-|***MIT Mode Control Method***|***2025-03-27***|***STM32F407VET6***|
+|***2025-03-27***|***STM32F407VET6***|***MIT Mode Control Method***|
