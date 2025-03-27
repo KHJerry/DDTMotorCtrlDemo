@@ -25,6 +25,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "math.h"
+#include "motor.h"
 #include "usbd_cdc_if.h"
 
 /* USER CODE END Includes */
@@ -48,63 +49,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
-
-
-//vel_ref rad/s
-void MITSend(uint32_t motor_id,float pos_ref,float vel_ref,float tor_ref,float kp,float kd) {
-
-    uint8_t txdata[8]={0,0,0,0,0,0,0,0};
-
-    uint16_t pos_uint16 = 32768;//zero point
-    uint16_t vel_uint16 = 2048; //zero velocity
-    uint16_t tor_uint16 = 2048; //zero torque
-    uint16_t kp_uint16  = 0;
-    uint16_t kd_uint16  = 0;
-
-    if(pos_ref <= -1.f)  pos_ref = -1.f;
-    if(pos_ref >=  1.f)  pos_ref =  1.f;
-    if(vel_ref <= -3.f)  vel_ref = -3.f;
-    if(vel_ref >=  3.f)  vel_ref =  3.f;
-    if(tor_ref <= -50.f) tor_ref = -50.f;
-    if(tor_ref >=  50.f) tor_ref =  50.f;
-    if(kp < 0.f)         kp = 0.f;
-    if(kp > 500.f)       kp = 500.f;
-    if(kd < 0.f)         kd = 0.f;
-    if(kd > 5.f)         kd = 5.f;
-
-    pos_ref/=1.f;
-    pos_uint16+=((uint16_t)(pos_ref*32767));
-
-    txdata[0] = (pos_uint16>>8)&0XFF;
-    txdata[1] = (pos_uint16>>0)&0XFF;
-
-    vel_ref/=3.f;
-    vel_uint16+=((int16_t)(vel_ref*2047));
-
-    txdata[2] = (vel_uint16>>4)&0XFF;
-    txdata[3] = ((vel_uint16<<4)&0XF0);
-
-    kp/=500.f;
-    kp_uint16+=((int16_t)(kp*4095));
-
-    txdata[3]|= ((kp_uint16>>8)&0X0F);
-    txdata[4] = (kp_uint16>>0)&0XFF;
-
-    kd/=5.f;
-    kd_uint16+=((int16_t)(kd*4095));
-
-    txdata[5] = (kd_uint16>>4)&0XFF;
-    txdata[6] = (kd_uint16<<4)&0XF0;
-
-    tor_ref   /=50.f;
-    tor_uint16+=((int16_t)(tor_ref*2047));
-
-    txdata[6] |= (tor_uint16>>8)&0X0F;
-    txdata[7]  = (tor_uint16>>0)&0XFF;
-
-    CAN_Send_Msg(motor_id,txdata);
-}
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -128,6 +72,7 @@ int16_t  data[3] = {0,0,0};
   */
 int main(void)
 {
+
   /* USER CODE BEGIN 1 */
   __HAL_RCC_HSI_ENABLE();
   __HAL_RCC_SYSCLK_CONFIG(RCC_SYSCLKSOURCE_HSE);
@@ -178,8 +123,7 @@ int main(void)
     timestamp = 0;
     do{
       sec = (float)timestamp/1000.f;
-      if(sec<0.5f)
-      {
+      if(sec<0.5f){
           pos_ref = sec*sec;
           vel_ref = 2.f*sec;
           tor_ref = 0.75f;
