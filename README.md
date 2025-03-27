@@ -1,5 +1,5 @@
-# DDTMotorCtrlDemo
-Some Demo about Direct Drive Tech Motor Control
+***# DDTMotorCtrlDemo***
+***Some Demo about Direct Drive Tech Motor Control***
 
 |***Date***|***Platform***|***Update***|***Branch***|
 |------------|----------|--------------|------------|
